@@ -20,7 +20,7 @@ const App = () => {
     const checkAPIKey = async () => {
       const storedKey = await AsyncStorage.getItem('chatgpt_api_key');
       if (storedKey) {
-        setIsKeyStored(true);
+        setIsKeyStored(true);x
       }
     };
     checkAPIKey();
