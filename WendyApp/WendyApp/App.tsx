@@ -6,21 +6,26 @@ import {
   Button,
   StyleSheet,
   ScrollView,
-  AsyncStorage,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { chatWithGPT, storeAPIKey } from './src/ChatGPTService';
 
-const App = () => {
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [apiKey, setApiKey] = useState('');
-  const [isKeyStored, setIsKeyStored] = useState(false);
+interface Message {
+  text: string;
+  sender: 'user' | 'gpt';
+}
+
+const App: React.FC = () => {
+  const [message, setMessage] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [apiKey, setApiKey] = useState<string>('');
+  const [isKeyStored, setIsKeyStored] = useState<boolean>(false);
 
   useEffect(() => {
     const checkAPIKey = async () => {
       const storedKey = await AsyncStorage.getItem('chatgpt_api_key');
       if (storedKey) {
-        setIsKeyStored(true);x
+        setIsKeyStored(true);
       }
     };
     checkAPIKey();
@@ -37,7 +42,10 @@ const App = () => {
 
     try {
       const response = await chatWithGPT(message);
-      setMessages((prevMessages) => [...prevMessages, { text: response, sender: 'gpt' }]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: response, sender: 'gpt' },
+      ]);
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -63,7 +71,10 @@ const App = () => {
     <View style={styles.container}>
       <ScrollView>
         {messages.map((msg, index) => (
-          <Text key={index} style={msg.sender === 'user' ? styles.userMessage : styles.gptMessage}>
+          <Text
+            key={index}
+            style={msg.sender === 'user' ? styles.userMessage : styles.gptMessage}
+          >
             {msg.text}
           </Text>
         ))}
